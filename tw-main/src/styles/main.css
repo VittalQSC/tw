@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  min-height: 100vh;
+}
+
+.btn {
+  @apply text-base h-10 px-6 font-semibold rounded-3xl;
+}
+
+.btn--primary {
+  @apply bg-blue-500 text-white hover:bg-blue-600;
+}
