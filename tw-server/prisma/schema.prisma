@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String?
+  published Boolean  @default(false)
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  password         String
+  name             String?
+  subscriberId     Int?      @unique
+  subscriber       User?     @relation("Subs", fields: [subscriberId], references: [id])
+  subscriptions    User?     @relation("Subs")
+  posts            Post[]
+  profile          Profile?
+  role             Role      @relation(fields: [roleName], references: [name])
+  roleName         String    @default("USER")
+  userId           Int?
+  authorMessages   Message[] @relation("author")
+  receiverMessages Message[] @relation("receiver")
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  content    String?
+  createdAt  DateTime @default(now())
+  author     User     @relation("author", fields: [authorId], references: [id])
+  authorId   Int
+  receiver   User     @relation("receiver", fields: [receiverId], references: [id])
+  receiverId Int
+}
+
+model Role {
+  name  String @id @default("USER")
+  users User[]
+}
+
+model Profile {
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  user   User    @relation(fields: [userId], references: [id])
+  userId Int     @unique
+}
