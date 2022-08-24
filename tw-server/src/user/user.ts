@@ -33,7 +33,8 @@ router.post("/login", async (req, res) => {
     if (user?.password === password) {
       const token = generateAccessToken(user);
       res.cookie("auth", token);
-      res.status(200).send("you succesfully logged in");
+      const { password: _, ...userWithoutPassword } = user;
+      res.status(200).json(userWithoutPassword);
     } else {
       res.status(300).send("email or password is wrong");
     }

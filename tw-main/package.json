@@ -28,9 +28,12 @@
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@types/react-router-dom": "^5.3.3",
+    "mobx": "^6.6.1",
+    "mobx-react": "^7.5.2",
     "postcss-preset-env": "^7.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.34.2",
     "react-router-dom": "^6.3.0"
   },
   "author": "",
