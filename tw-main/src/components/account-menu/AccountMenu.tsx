@@ -39,16 +39,16 @@ export default observer(function AccountMenu() {
   }
 
   return (
-    <>
+    <div className="w-full">
       {subShown && (
         <div className="relative">
-          <div className="absolute top-[0px] px-[10px] py-[5px] border-[2px] border-slate-400 rounded-3xl min-w-[400px]">
+          <div className="absolute top-[-70px] px-[10px] py-[5px] border-[2px] border-slate-400 rounded-3xl min-w-[400px]">
             <button className="btn btn--secondary" onClick={onClickLogout}>Logout</button>
           </div>
         </div>
       )}
       <button
-        className="flex justify-between hover:bg-slate-200 rounded-3xl p-[15px]"
+        className="w-full flex justify-between hover:bg-slate-200 rounded-3xl p-[15px]"
         onClick={toggleSub}
       >
         <div>
@@ -57,6 +57,6 @@ export default observer(function AccountMenu() {
         </div>
         <div className="text-slate-400">...</div>
       </button>
-    </>
+    </div>
   );
 });
