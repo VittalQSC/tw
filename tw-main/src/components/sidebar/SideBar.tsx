@@ -2,6 +2,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { me } from "../../stores/User";
+import AccountMenu from "../account-menu/AccountMenu";
 
 export default observer(function SideBar() {
   return (
@@ -35,21 +36,7 @@ export default observer(function SideBar() {
         <div className="pb-8"></div>
         <button className="btn btn--primary min-w-[225px]">Twii</button>
       </div>
-      {!me?.user?.name ? (
-        <div>
-          <button className="btn btn--primary min-w-[225px]">
-            <Link to="sign-up">Sign up</Link>
-          </button>
-          <span className="mx-[2px]"></span>
-          <button className="btn btn--secondary min-w-[225px]">
-            <Link to="sign-in">Sign in</Link>
-          </button>
-        </div>
-      ) : (
-        <div>
-          hello, {me?.user?.name}
-        </div>
-      )}
+      <AccountMenu />
     </div>
   );
 });

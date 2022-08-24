@@ -23,3 +23,7 @@ export function signUp(user: IUserToCreate) {
     body: JSON.stringify(user),
   }).then((res) => res.json());
 }
+
+export function logout() {
+  return fetch(`${baseUrl}users/logout`);
+}

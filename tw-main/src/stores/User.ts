@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { login, signUp } from "../api";
+import { login, logout, signUp } from "../api";
 
 export interface IUserToCreate {
     name: string | null;
@@ -49,6 +49,12 @@ class Me {
 
   signUp(user: IUserToCreate) {
       return signUp(user);
+  }
+
+  logout() {
+    return logout().then(() => {
+      this.user = null;
+    });
   }
 }
 
