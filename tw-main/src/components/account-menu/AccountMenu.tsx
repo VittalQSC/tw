@@ -8,7 +8,6 @@ import { ModalRelativePosition, useModal } from "../../hooks/modal/useModal";
 
 export default observer(function AccountMenu() {
   const [subShown, setSubShown] = useState(false);
-
   const navigate = useNavigate();
   const container = useRef(null);
   const content = useRef(null);

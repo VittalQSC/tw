@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { me } from "../../stores/User";
 import AccountMenu from "../account-menu/AccountMenu";
 
 export default observer(function SideBar() {
