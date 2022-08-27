@@ -1,10 +1,8 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { ModuleFederationPlugin } = require("webpack").container;
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
-
-const deps = require("./package.json").dependencies;
 
 module.exports = {
   entry: "./src/index",
@@ -12,7 +10,7 @@ module.exports = {
   devtool: "inline-source-map",
   devServer: {
     static: path.join(__dirname, "dist"),
-    port: 3002,
+    port: 3003,
   },
   output: {
     filename: "[name].[contenthash].js",
@@ -44,6 +42,10 @@ module.exports = {
         test: /\.(css|s[ac]ss)$/i,
         use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
       },
+      {
+        test: /\.(png|jpg|gif)$/i,
+        type: "asset/resource",
+      },
     ],
   },
   plugins: [
@@ -52,14 +54,10 @@ module.exports = {
     new ModuleFederationPlugin({
       name: "posts",
       filename: "remoteEntry.js",
-      remotes: {
-        posts: "posts@http://localhost:3003/remoteEntry.js",
+      exposes: {
+        "./Posts": "./src/components/Posts",
       },
-      shared: {
-        ...deps,
-        react: { singleton: true, requiredVersion: deps["react"] },
-        "react-dom": { singleton: true, requiredVersion: deps["react-dom"] },
-      },
+      shared: { react: { singleton: true }, "react-dom": { singleton: true } },
     }),
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash].css",

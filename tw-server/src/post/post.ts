@@ -7,7 +7,11 @@ const router = express.Router();
 router.get("/all-posts", async (req, res) => {
   try {
     const { prisma } = getContext();
-    const posts = await prisma.post.findMany();
+    const posts = await prisma.post.findMany({
+      include: {
+        author: true
+      }
+    });
     res.json(posts);
   } catch (error) {
     res.status(500).send("somethign went wrong");
