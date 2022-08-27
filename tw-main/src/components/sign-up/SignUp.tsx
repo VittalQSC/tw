@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import * as React from "react";
 import { useState, ChangeEvent } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { me } from "../../stores/User";
 import { PasswordInputState } from "../shared";
 
@@ -19,10 +20,13 @@ export default observer(function SignUp() {
     formState: { errors },
   } = useForm<Inputs>();
 
+  const navigate = useNavigate();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const { name, password, email } = data;
       await me.signUp({ name, password, email });
+      await me.login(email, password);
+      navigate("/home");
     } catch (error) {}
   };
 

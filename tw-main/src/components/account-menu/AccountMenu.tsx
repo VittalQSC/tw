@@ -1,12 +1,30 @@
 import { autorun } from "mobx";
 import { observer } from "mobx-react";
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { me } from "../../stores/User";
+import { ModalRelativePosition, useModal } from "../../hooks/modal/useModal";
 
 export default observer(function AccountMenu() {
   const [subShown, setSubShown] = useState(false);
+
+  const navigate = useNavigate();
+  const container = useRef(null);
+  const content = useRef(null);
+  const { components } = useModal({
+    contentRelativeRef: container,
+    relativePosition: ModalRelativePosition.ABOVE,
+  });
+
+  function toggleSub() {
+    setSubShown(!subShown);
+  }
+
+  async function onClickLogout() {
+    await me.logout();
+    navigate('/sign-in');
+  }
 
   useEffect(() => {
     autorun(() => {
@@ -30,25 +48,25 @@ export default observer(function AccountMenu() {
     );
   }
 
-  function toggleSub() {
-    setSubShown(!subShown);
-  }
-
-  async function onClickLogout() {
-      await me.logout();
-  }
-
   return (
     <div className="w-full">
-      {subShown && (
-        <div className="relative">
-          <div className="absolute top-[-70px] px-[10px] py-[5px] border-[2px] border-slate-400 rounded-3xl min-w-[400px]">
-            <button className="btn btn--secondary" onClick={onClickLogout}>Logout</button>
-          </div>
+      <components.Modal
+        isOpen={subShown}
+        onRequestClose={toggleSub}
+        contentRef={(node) => (content.current = node)}
+      >
+        <div className="drop-shadow-2xl border-slate-400 bg-white top-[-70px] px-[30px] py-[20px] border-[1px] rounded-3xl max-w-[400px]">
+          <button
+            className="min-w-[300px] hover:bg-blue-100 p-[10px]"
+            onClick={onClickLogout}
+          >
+            Logout
+          </button>
         </div>
-      )}
+      </components.Modal>
       <button
         className="w-full flex justify-between hover:bg-slate-200 rounded-3xl p-[15px]"
+        ref={container}
         onClick={toggleSub}
       >
         <div>
