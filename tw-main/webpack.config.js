@@ -57,6 +57,19 @@ module.exports = {
       },
       shared: {
         ...deps,
+        axios: {
+          singleton: true,
+          requiredVersion: deps["axios"],
+        },
+        "react-hook-form": {
+          singleton: true,
+          requiredVersion: deps["react-hook-form"],
+        },
+        "mobx-react-lite": {
+          singleton: true,
+          requiredVersion: deps["mobx-react-lite"],
+        },
+        mobx: { singleton: true, requiredVersion: deps["mobx"] },
         react: { singleton: true, requiredVersion: deps["react"] },
         "react-dom": { singleton: true, requiredVersion: deps["react-dom"] },
       },

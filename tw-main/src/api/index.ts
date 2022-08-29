@@ -1,29 +1,34 @@
-import { IUserToCreate } from "../stores/User";
+import axios from "axios";
+import { IUserToCreate, IUser } from "../stores/User";
 
 export const baseUrl = "http://localhost:3000/";
 
-export function login(email: string, password: string) {
-  return fetch(`${baseUrl}users/login`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  }).then((res) => res.json());
+export function login(email: string, password: string): Promise<IUser> {
+  return axios
+    .post<IUser>(
+      `${baseUrl}users/login`,
+      { email, password },
+      {
+        withCredentials: true,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    .then((res) => res.data);
 }
 
 export function signUp(user: IUserToCreate) {
-  return fetch(`${baseUrl}users/create-user`, {
-    method: "POST",
+  return axios.post<IUserToCreate>(`${baseUrl}users/create-user`, user, {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      credentials: "same-origin",
     },
-    body: JSON.stringify(user),
-  }).then((res) => res.json());
+  });
 }
 
 export function logout() {
-  return fetch(`${baseUrl}users/logout`);
+  return axios.get(`${baseUrl}users/logout`);
 }

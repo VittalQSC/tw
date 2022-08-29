@@ -5,3 +5,9 @@ declare module "posts/Posts" {
 
 	export default Posts;
 }
+
+declare module "posts/CreatePost" {
+	const CreatePost: React.ComponentType;
+
+	export default CreatePost;
+}

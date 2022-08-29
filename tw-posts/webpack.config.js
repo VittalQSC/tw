@@ -4,6 +4,8 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
+const deps = require("./package.json").dependencies;
+
 module.exports = {
   entry: "./src/index",
   mode: "development",
@@ -56,8 +58,26 @@ module.exports = {
       filename: "remoteEntry.js",
       exposes: {
         "./Posts": "./src/components/Posts",
+        "./CreatePost": "./src/components/CreatePost.tsx",
       },
-      shared: { react: { singleton: true }, "react-dom": { singleton: true } },
+      shared: {
+        ...deps,
+        axios: {
+          singleton: true,
+          requiredVersion: deps["axios"],
+        },
+        "react-hook-form": {
+          singleton: true,
+          requiredVersion: deps["react-hook-form"],
+        },
+        "mobx-react-lite": {
+          singleton: true,
+          requiredVersion: deps["mobx-react-lite"],
+        },
+        mobx: { singleton: true, requiredVersion: deps["mobx"] },
+        react: { singleton: true, requiredVersion: deps["react"] },
+        "react-dom": { singleton: true, requiredVersion: deps["react-dom"] },
+      },
     }),
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash].css",

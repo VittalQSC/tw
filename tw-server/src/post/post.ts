@@ -26,6 +26,9 @@ router.post("/create-post", authenticateToken, async (req, res) => {
         content: req.body.content,
         authorId: req.body.ctx.user.id,
       },
+      include: {
+        author: true
+      }
     });
     res.json({ createdPost: result });
   } catch (error) {
