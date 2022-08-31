@@ -5,7 +5,7 @@ import AccountMenu from "../account-menu/AccountMenu";
 
 export default observer(function SideBar() {
   return (
-    <div className="flex justify-between flex-col px-[12px] pb-[10px]">
+    <div className="flex justify-between flex-col px-[12px] pb-[10px] max-h-screen">
       <div className="flex flex-col">
         <header className="font-bold text-2xl text-blue-500">Twii</header>
         <div className="pb-4"></div>

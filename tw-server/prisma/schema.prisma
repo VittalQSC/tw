@@ -21,20 +21,28 @@ model Post {
 }
 
 model User {
-  id               Int       @id @default(autoincrement())
-  email            String    @unique
-  password         String
-  name             String?
-  subscriberId     Int?      @unique
-  subscriber       User?     @relation("Subs", fields: [subscriberId], references: [id])
-  subscriptions    User?     @relation("Subs")
-  posts            Post[]
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  name     String?
+  posts    Post[]
+
+  followers FollowerOnFollowed[] @relation("follower")
+  followed  FollowerOnFollowed[] @relation("followed")
+
   profile          Profile?
   role             Role      @relation(fields: [roleName], references: [name])
   roleName         String    @default("USER")
-  userId           Int?
   authorMessages   Message[] @relation("author")
   receiverMessages Message[] @relation("receiver")
+}
+
+model FollowerOnFollowed {
+  id         Int  @id @default(autoincrement())
+  follower   User @relation("follower", fields: [followerId], references: [id])
+  followerId Int
+  followed   User @relation("followed", fields: [followedId], references: [id])
+  followedId Int
 }
 
 model Message {
