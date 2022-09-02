@@ -38,11 +38,12 @@ model User {
 }
 
 model FollowerOnFollowed {
-  id         Int  @id @default(autoincrement())
   follower   User @relation("follower", fields: [followerId], references: [id])
   followerId Int
   followed   User @relation("followed", fields: [followedId], references: [id])
   followedId Int
+
+  @@unique([followedId, followerId], name: "followedId_followerId_key")
 }
 
 model Message {

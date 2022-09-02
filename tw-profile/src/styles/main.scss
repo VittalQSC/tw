@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn {
+  @apply text-base h-10 px-6 font-semibold rounded-3xl;
+}
+
+.btn--primary {
+  @apply bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.btn--secondary {
+  @apply border-slate-800 border-2 hover:bg-slate-200;
+}
+
+.btn--light {
+  @apply border-slate-400 border-[1px] hover:bg-slate-200;
+}
+
+.btn--dark {
+  @apply bg-black text-white border-[1px] hover:bg-slate-600;
+}

@@ -1,6 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { ModuleFederationPlugin } = require("webpack").container;
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
@@ -12,7 +12,7 @@ module.exports = {
   devtool: "inline-source-map",
   devServer: {
     static: path.join(__dirname, "dist"),
-    port: 3002,
+    port: 3004,
   },
   output: {
     filename: "[name].[contenthash].js",
@@ -44,17 +44,21 @@ module.exports = {
         test: /\.(css|s[ac]ss)$/i,
         use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
       },
+      {
+        test: /\.(png|jpg|gif)$/i,
+        type: "asset/resource",
+      },
     ],
   },
   plugins: [
     new CleanWebpackPlugin(),
     // To learn more about the usage of this plugin, please visit https://webpack.js.org/plugins/module-federation-plugin/
     new ModuleFederationPlugin({
-      name: "posts",
+      name: "profile",
       filename: "remoteEntry.js",
-      remotes: {
-        posts: "posts@http://localhost:3003/remoteEntry.js",
-        profile: "profile@http://localhost:3004/remoteEntry.js",
+      exposes: {
+        "./Profile": "./src/components/Profile",
+        // "./CreatePost": "./src/components/CreatePost.tsx",
       },
       shared: {
         ...deps,

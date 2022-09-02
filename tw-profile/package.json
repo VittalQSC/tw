@@ -1,5 +1,5 @@
 {
-  "name": "tw-posts",
+  "name": "tw-profile",
   "scripts": {
     "start": "webpack-dev-server --mode development"
   },
@@ -35,7 +35,6 @@
     "postcss-preset-env": "^7.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.34.2",
-    "react-router-dom": "^6.3.0"
+    "react-hook-form": "^7.34.2"
   }
 }
