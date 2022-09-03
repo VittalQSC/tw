@@ -4,7 +4,7 @@ import "./../styles/main.scss";
 
 interface IProps {
   userId: number;
-  meId?: number;
+  meId?: number | null;
 }
 
 export default function Profile(props: IProps) {
@@ -17,19 +17,18 @@ export default function Profile(props: IProps) {
     <div className="p-[10px] border-[1px]">
       <div className="">
         <div className="flex justify-end">
-          {props.userId !== props.meId && (
-            <button
-              className={`btn ${
-                currFollowState === FollowState.FOLLOW
-                  ? "btn--dark"
-                  : "btn--light"
-              }`}
-              onClick={() => toggleFollow()}
-            >
-              {currFollowState === FollowState.FOLLOW && "Follow"}
-              {currFollowState === FollowState.UNFOLLOW && "Unfollow"}
-            </button>
-          )}
+          {props.meId && props.userId !== props.meId &&
+            currFollowState === FollowState.FOLLOW && (
+              <button className="btn btn--dark" onClick={() => toggleFollow()}>
+                Follow
+              </button>
+            )}
+          {props.meId && props.userId !== props.meId &&
+            currFollowState === FollowState.UNFOLLOW && (
+              <button className="btn btn--light" onClick={() => toggleFollow()}>
+                Unfollow
+              </button>
+            )}
         </div>
       </div>
       <div>

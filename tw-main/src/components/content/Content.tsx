@@ -27,7 +27,7 @@ const ProfilePage = observer(function ProfilePage() {
   const navigate = useNavigate();
   return (
     <div>
-      <Profile userId={+params.userId} meId={me?.user?.id} />
+      <Profile userId={+params.userId} meId={me?.user?.id || null} />
       <Posts
         onNavigate={(userId) => {
           navigate(`/profile/${userId}`);

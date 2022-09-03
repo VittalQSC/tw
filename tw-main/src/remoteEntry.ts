@@ -17,7 +17,7 @@ declare module "posts/CreatePost" {
 }
 
 declare module "profile/Profile" {
-  const Profile: React.ComponentType<{ userId: number; meId?: number }>;
+  const Profile: React.ComponentType<{ userId: number; meId?: number | null }>;
 
   export default Profile;
 }
