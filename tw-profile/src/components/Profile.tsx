@@ -17,17 +17,19 @@ export default function Profile(props: IProps) {
     <div className="p-[10px] border-[1px]">
       <div className="">
         <div className="flex justify-end">
-          <button
-            className={`btn ${
-              currFollowState === FollowState.FOLLOW
-                ? "btn--dark"
-                : "btn--light"
-            }`}
-            onClick={() => toggleFollow()}
-          >
-            {currFollowState === FollowState.FOLLOW && "Follow"}
-            {currFollowState === FollowState.UNFOLLOW && "Unfollow"}
-          </button>
+          {props.userId !== props.meId && (
+            <button
+              className={`btn ${
+                currFollowState === FollowState.FOLLOW
+                  ? "btn--dark"
+                  : "btn--light"
+              }`}
+              onClick={() => toggleFollow()}
+            >
+              {currFollowState === FollowState.FOLLOW && "Follow"}
+              {currFollowState === FollowState.UNFOLLOW && "Unfollow"}
+            </button>
+          )}
         </div>
       </div>
       <div>

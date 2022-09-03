@@ -1,19 +1,23 @@
 ///<reference types="react" />
 
 declare module "posts/Posts" {
-	const Posts: React.ComponentType<{ onNavigate: (userId: number) => void }>;
+  const Posts: React.ComponentType<{ onNavigate: (userId: number) => void }>;
 
-	export default Posts;
+  export default Posts;
 }
 
 declare module "posts/CreatePost" {
-	const CreatePost: React.ComponentType;
+  const CreatePost: React.ComponentType<{
+    withBorders?: boolean;
+    onPostSubmit?: () => void;
+    onPostReject?: () => void;
+  }>;
 
-	export default CreatePost;
+  export default CreatePost;
 }
 
 declare module "profile/Profile" {
-	const Profile: React.ComponentType<{ userId: number, meId?: number }>;
+  const Profile: React.ComponentType<{ userId: number; meId?: number }>;
 
-	export default Profile;
+  export default Profile;
 }

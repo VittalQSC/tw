@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { autorun } from "mobx";
-import { Post, postList } from "../stores/Posts";
+import { postList } from "../stores/Posts";
 
 export function usePosts() {
   useEffect(() => {

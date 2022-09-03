@@ -4,34 +4,13 @@ import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { me } from "../../stores/User";
-import { ModalRelativePosition, useModal } from "../../hooks/modal/useModal";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 export default observer(function AccountMenu() {
-  const [subShown, setSubShown] = useState(false);
-  const navigate = useNavigate();
-  const container = useRef(null);
-  const content = useRef(null);
-  const { components } = useModal({
-    contentRelativeRef: container,
-    relativePosition: ModalRelativePosition.ABOVE,
-  });
-
-  function toggleSub() {
-    setSubShown(!subShown);
-  }
-
-  async function onClickLogout() {
-    await me.logout();
-    navigate('/sign-in');
-  }
-
-  useEffect(() => {
-    autorun(() => {
-      if (!me.user?.email) {
-        setSubShown(false);
-      }
-    });
-  }, []);
+  const {
+    onClickLogout,
+    toast: { toastRef, showToast, toggleToast },
+  } = useAccountMenu();
 
   if (!me.user?.email) {
     return (
@@ -48,13 +27,12 @@ export default observer(function AccountMenu() {
   }
 
   return (
-    <div className="w-full">
-      <components.Modal
-        isOpen={subShown}
-        onRequestClose={toggleSub}
-        contentRef={(node) => (content.current = node)}
-      >
-        <div className="drop-shadow-2xl border-slate-400 bg-white top-[-70px] px-[30px] py-[20px] border-[1px] rounded-3xl max-w-[400px]">
+    <div className="w-full relative">
+      {showToast && (
+        <div
+          ref={toastRef}
+          className="absolute drop-shadow-2xl border-slate-400 bg-white top-[-70px] px-[30px] py-[20px] border-[1px] rounded-3xl max-w-[400px]"
+        >
           <button
             className="min-w-[300px] hover:bg-blue-100 p-[10px]"
             onClick={onClickLogout}
@@ -62,11 +40,10 @@ export default observer(function AccountMenu() {
             Logout
           </button>
         </div>
-      </components.Modal>
+      )}
       <button
         className="w-full flex justify-between hover:bg-slate-200 rounded-3xl p-[15px]"
-        ref={container}
-        onClick={toggleSub}
+        onClick={toggleToast}
       >
         <div>
           <div className="font-extrabold">{me.user.name}</div>
@@ -77,3 +54,33 @@ export default observer(function AccountMenu() {
     </div>
   );
 });
+
+function useAccountMenu() {
+  const navigate = useNavigate();
+
+  const toastRef = useRef(null);
+  const [showToast, setShowToast] = useState<boolean>(false);
+  function onClickOutsideToast() {
+    setShowToast(false);
+  }
+  useClickOutside(toastRef, onClickOutsideToast);
+
+  function toggleToast() {
+    setShowToast((prev) => !prev);
+  }
+
+  async function onClickLogout() {
+    await me.logout();
+    navigate("/sign-in");
+  }
+
+  useEffect(() => {
+    autorun(() => {
+      if (!me.user?.email) {
+        onClickOutsideToast();
+      }
+    });
+  }, []);
+
+  return { onClickLogout, toast: { toastRef, showToast, toggleToast } };
+}
