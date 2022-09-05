@@ -26,6 +26,7 @@
     "webpack-dev-server": "^4.0.0"
   },
   "dependencies": {
+    "@heroicons/react": "^2.0.10",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "axios": "^0.27.2",
@@ -36,6 +37,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.34.2",
+    "react-icons": "^4.4.0",
     "react-router-dom": "^6.3.0"
   }
 }

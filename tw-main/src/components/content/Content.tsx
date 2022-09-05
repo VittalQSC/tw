@@ -17,6 +17,7 @@ const Home = observer(function Home() {
         onNavigate={(userId) => {
           navigate(`/profile/${userId}`);
         }}
+        meId={me?.user?.id || null}
       />
     </div>
   );
@@ -32,6 +33,7 @@ const ProfilePage = observer(function ProfilePage() {
         onNavigate={(userId) => {
           navigate(`/profile/${userId}`);
         }}
+        meId={me?.user?.id || null}
       />
     </div>
   );

@@ -11,30 +11,52 @@ datasource db {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  content         String?
+  published       Boolean  @default(false)
+  author          User     @relation(fields: [authorId], references: [id])
+  authorId        Int
+  likes           Like[]
+  retwiis         Retwii[] @relation("retwii")
+  replaceByRetwii Retwii?  @relation("retwiiAsPost")
+  replies         Reply[]
+}
+
+model Retwii {
+  id             Int     @id @default(autoincrement())
+  comment        String?
+  post           Post    @relation("retwii", fields: [postId], references: [id])
+  postId         Int
+  replacedPost   Post    @relation("retwiiAsPost", fields: [replacedPostId], references: [id])
+  replacedPostId Int     @unique
+}
+
+model Reply {
+  id      Int     @id @default(autoincrement())
+  content String
+  post    Post?   @relation(fields: [postId], references: [id])
+  postId  Int?
+  replies Reply[] @relation("replyOnReply")
+  reply   Reply?  @relation("replyOnReply", fields: [replyId], references: [id])
+  replyId Int?
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  name     String?
-  posts    Post[]
-
-  followers FollowerOnFollowed[] @relation("follower")
-  followed  FollowerOnFollowed[] @relation("followed")
-
+  id               Int                  @id @default(autoincrement())
+  email            String               @unique
+  password         String
+  name             String?
+  posts            Post[]
+  followers        FollowerOnFollowed[] @relation("follower")
+  followed         FollowerOnFollowed[] @relation("followed")
+  liked            Like[]
   profile          Profile?
-  role             Role      @relation(fields: [roleName], references: [name])
-  roleName         String    @default("USER")
-  authorMessages   Message[] @relation("author")
-  receiverMessages Message[] @relation("receiver")
+  role             Role                 @relation(fields: [roleName], references: [name])
+  roleName         String               @default("USER")
+  authorMessages   Message[]            @relation("author")
+  receiverMessages Message[]            @relation("receiver")
 }
 
 model FollowerOnFollowed {
@@ -44,6 +66,15 @@ model FollowerOnFollowed {
   followedId Int
 
   @@unique([followedId, followerId], name: "followedId_followerId_key")
+}
+
+model Like {
+  liker     User @relation(fields: [likerId], references: [id])
+  likerId   Int
+  likedPost Post @relation(fields: [likedId], references: [id])
+  likedId   Int
+
+  @@unique([likerId, likedId])
 }
 
 model Message {

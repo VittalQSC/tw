@@ -9,6 +9,7 @@ export interface IPost {
   content: string;
   createdAt: string;
   author: IAuthor;
+  likes: { likerId: number; likedId: number }[];
 }
 
 export function getPosts(): Promise<IPost[]> {
@@ -16,11 +17,37 @@ export function getPosts(): Promise<IPost[]> {
 }
 
 export function createPost(content: string) {
+  return axios
+    .post(
+      `${baseUrl}posts/create-post`,
+      { content },
+      {
+        withCredentials: true,
+      }
+    )
+    .then((res) => res.data.createdPost);
+}
+
+export function like(postId: number) {
   return axios.post(
-    `${baseUrl}posts/create-post`,
-    { content },
+    `${baseUrl}posts/like`,
+    {
+      likedPostId: postId,
+    },
     {
       withCredentials: true,
     }
-  ).then(res => res.data.createdPost);
+  );
+}
+
+export function unlike(postId: number) {
+  return axios.post(
+    `${baseUrl}posts/unlike`,
+    {
+      unlikedPostId: postId,
+    },
+    {
+      withCredentials: true,
+    }
+  );
 }

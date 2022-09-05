@@ -9,12 +9,13 @@ router.get("/all-posts", async (req, res) => {
     const { prisma } = getContext();
     const posts = await prisma.post.findMany({
       include: {
-        author: true
-      }
+        author: true,
+        likes: true,
+      },
     });
     res.json(posts);
   } catch (error) {
-    res.status(500).send("somethign went wrong");
+    res.status(500).send("something went wrong");
   }
 });
 
@@ -27,12 +28,44 @@ router.post("/create-post", authenticateToken, async (req, res) => {
         authorId: req.body.ctx.user.id,
       },
       include: {
-        author: true
-      }
+        author: true,
+      },
     });
     res.json({ createdPost: result });
   } catch (error) {
-    res.status(500).send("somethign went wrong");
+    res.status(500).send("something went wrong");
+  }
+});
+
+router.post("/like", authenticateToken, async (req, res) => {
+  try {
+    const { prisma } = getContext();
+    const result = await prisma.like.create({
+      data: {
+        likerId: req.body.ctx.user.id,
+        likedId: req.body.likedPostId,
+      },
+    });
+    res.json(result);
+  } catch (error) {
+    res.status(500).send("something went wrong");
+  }
+});
+
+router.post("/unlike", authenticateToken, async (req, res) => {
+  try {
+    const { prisma } = getContext();
+    const result = await prisma.like.delete({
+      where: {
+        likerId_likedId: {
+          likerId: req.body.ctx.user.id,
+          likedId: req.body.unlikedPostId,
+        },
+      },
+    });
+    res.json(result);
+  } catch (error) {
+    res.status(500).send("something went wrong");
   }
 });
 
