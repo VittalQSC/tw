@@ -1,16 +1,43 @@
-import { makeAutoObservable } from "mobx";
-import { createPost, getPosts, IAuthor, IPost, like, unlike } from "../api";
+import { makeAutoObservable, runInAction } from "mobx";
+import {
+  createPost,
+  getPosts,
+  IAuthor,
+  IPost,
+  like,
+  retwii,
+  unlike,
+} from "../api";
 
+export interface Retwii {
+  post: any;
+  comment?: string;
+}
 export class Post {
   id: number = 0;
   content: string = "";
   createdAt: string | null = null;
   author: IAuthor = null;
+  retwiis: any[] = [];
   likesSet: Set<number> = new Set();
+  replaceByRetwii?: Retwii;
 
-  constructor(post?: IPost) {
+  postList: PostList | null = null;
+
+  get isRetwii() {
+    return !!this.replaceByRetwii;
+  }
+
+  get postData(): Post {
+    return this.isRetwii
+      ? this.postList.findPostById(this.replaceByRetwii.post.id)
+      : this;
+  }
+
+  constructor(postList: PostList, post?: IPost) {
     makeAutoObservable(this);
 
+    this.postList = postList;
     const { likes, ...restPost } = post;
     Object.assign(this, restPost);
     this.likesSet = new Set(
@@ -19,20 +46,33 @@ export class Post {
   }
 
   isLikedBy(userId: number | null) {
-    return this.likesSet.has(userId);
+    return this.postData.likesSet.has(userId);
+  }
+
+  isRetwiitedBy(userId: number | null) {
+    return !!this.retwiis.find(
+      (retwii) => retwii.replacedPost.author.id === userId
+    );
   }
 
   async like() {
     try {
-      const liked = await like(this.id);
-      this.likesSet.add(liked.data.likerId);
+      const liked = await like(this.postData.id);
+      this.postData.likesSet.add(liked.data.likerId);
     } catch (error) {}
   }
 
   async unlike() {
     try {
       const unliked: any = await unlike(this.id);
-      this.likesSet.delete(unliked.data.likerId);
+      this.postData.likesSet.delete(unliked.data.likerId);
+    } catch (error) {}
+  }
+
+  // TODO add comment handling
+  async retwii(postId: number) {
+    try {
+      const post = await retwii(postId);
     } catch (error) {}
   }
 }
@@ -48,6 +88,10 @@ export class PostList {
     this.loaded = false;
   }
 
+  findPostById(postId: number) {
+    return this.posts.find((p) => p.id === postId);
+  }
+
   async loadAll() {
     if (this.loaded) {
       return;
@@ -60,7 +104,7 @@ export class PostList {
     this.posts = [];
     const posts = await getPosts();
     posts.forEach((post) => {
-      this.posts.push(new Post(post));
+      this.posts.push(new Post(this, post));
     });
   }
 

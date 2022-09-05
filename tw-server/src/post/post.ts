@@ -11,6 +11,26 @@ router.get("/all-posts", async (req, res) => {
       include: {
         author: true,
         likes: true,
+        retwiis: {
+          include: {
+            replacedPost: {
+              include: {
+                author: true,
+              },
+            },
+          },
+        },
+        replaceByRetwii: {
+          include: {
+            post: {
+              include: {
+                author: true,
+                likes: true,
+                retwiis: true,
+              },
+            },
+          },
+        },
       },
     });
     res.json(posts);
@@ -64,6 +84,58 @@ router.post("/unlike", authenticateToken, async (req, res) => {
       },
     });
     res.json(result);
+  } catch (error) {
+    res.status(500).send("something went wrong");
+  }
+});
+
+router.post("/retwii", authenticateToken, async (req, res) => {
+  try {
+    const { prisma } = getContext();
+
+    const retwii = await prisma.post.create({
+      data: {
+        authorId: req.body.ctx.user.id,
+        replaceByRetwii: {
+          create: {
+            postId: +req.body.postId,
+            comment: req.body.comment,
+          },
+        },
+      },
+    });
+
+    const post = await prisma.post.findFirst({
+      where: {
+        id: retwii.id
+      },
+      include: {
+        author: true,
+        likes: true,
+        retwiis: {
+          include: {
+            replacedPost: {
+              include: {
+                author: true,
+              },
+            },
+          },
+        },
+        replaceByRetwii: {
+          include: {
+            post: {
+              include: {
+                author: true,
+                likes: true,
+                retwiis: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    res.json(post);
   } catch (error) {
     res.status(500).send("something went wrong");
   }

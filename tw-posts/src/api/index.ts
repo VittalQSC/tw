@@ -51,3 +51,16 @@ export function unlike(postId: number) {
     }
   );
 }
+
+export function retwii(postId: number, comment?: string) {
+  return axios.post(
+    `${baseUrl}posts/retwii`,
+    {
+      postId,
+      comment,
+    },
+    {
+      withCredentials: true,
+    }
+  );
+}
