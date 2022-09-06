@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import {
   createPost,
   getPosts,
@@ -9,87 +9,110 @@ import {
   unlike,
 } from "../api";
 
-export interface Retwii {
+export interface RetwiiDto {
   post: any;
   comment?: string;
 }
+
+export class Retwii {
+  comment: string | null = null;
+  retwiitedPostId: number | null = null;
+  postId: number | null = null;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+}
+
 export class Post {
   id: number = 0;
   content: string = "";
   createdAt: string | null = null;
   author: IAuthor = null;
-  retwiis: any[] = [];
   likesSet: Set<number> = new Set();
-  replaceByRetwii?: Retwii;
+  retwiisSet: Set<number> = new Set();
+  retwiiPostId: number | null = null;
 
   postList: PostList | null = null;
-
-  get isRetwii() {
-    return !!this.replaceByRetwii;
-  }
-
-  get postData(): Post {
-    return this.isRetwii
-      ? this.postList.findPostById(this.replaceByRetwii.post.id)
-      : this;
-  }
 
   constructor(postList: PostList, post?: IPost) {
     makeAutoObservable(this);
 
     this.postList = postList;
-    const { likes, ...restPost } = post;
+    const { likes, replaceByRetwii, retwiis, ...restPost } = post;
     Object.assign(this, restPost);
     this.likesSet = new Set(
-      likes.map((like: { likerId: number }) => like.likerId)
+      (likes || []).map((like: { likerId: number }) => like.likerId)
     );
+    this.retwiisSet = new Set((retwiis || []).map((retwii) => retwii.replacedPostId));
+    this.retwiiPostId = replaceByRetwii?.postId;
+  }
+
+  get isRetwii(): boolean {
+    return !!this.retwiiPostId;
+  }
+
+  get retwiiPost(): Post | null {
+    return this.postList.mapIdToPost.get(this.retwiiPostId);
   }
 
   isLikedBy(userId: number | null) {
-    return this.postData.likesSet.has(userId);
+    return this.likesSet.has(userId);
   }
 
   isRetwiitedBy(userId: number | null) {
-    return !!this.retwiis.find(
-      (retwii) => retwii.replacedPost.author.id === userId
-    );
+    return !this.isRetwii && !!Array.from(this.retwiisSet).find(replacedPostId => {
+      return this.postList.mapIdToPost.get(replacedPostId).author.id === userId;
+    });
+  }
+
+  onRetwii(replacedPostId: number) {
+    this.retwiisSet.add(replacedPostId);
   }
 
   async like() {
     try {
-      const liked = await like(this.postData.id);
-      this.postData.likesSet.add(liked.data.likerId);
+      const liked = await like(this.id);
+      this.likesSet.add(liked.data.likerId);
     } catch (error) {}
   }
 
   async unlike() {
     try {
       const unliked: any = await unlike(this.id);
-      this.postData.likesSet.delete(unliked.data.likerId);
+      this.likesSet.delete(unliked.data.likerId);
     } catch (error) {}
   }
 
-  // TODO add comment handling
   async retwii(postId: number) {
-    try {
-      const post = await retwii(postId);
-    } catch (error) {}
+    return this.postList.retwii(postId);
   }
 }
 
 export class PostList {
   loaded: boolean = false;
-  posts: Post[] = [];
+  mapIdToPost: Map<number, Post> = new Map();
+  postIds: number[] = [];
+
+  get posts(): Post[] {
+    return this.postIds.map((postId) => this.mapIdToPost.get(postId));
+  }
 
   constructor() {
     makeAutoObservable(this);
 
-    this.posts = [];
+    this.mapIdToPost = new Map();
+    this.postIds = [];
     this.loaded = false;
   }
 
-  findPostById(postId: number) {
-    return this.posts.find((p) => p.id === postId);
+  findPostById(postId: number): Post | undefined {
+    return this.mapIdToPost.get(postId);
+  }
+
+  appendPost(post: Post) {
+    this.mapIdToPost.set(post.id, post);
+    this.postIds.push(post.id);
   }
 
   async loadAll() {
@@ -101,17 +124,24 @@ export class PostList {
   }
 
   async reloadAll() {
-    this.posts = [];
     const posts = await getPosts();
     posts.forEach((post) => {
-      this.posts.push(new Post(this, post));
+      this.appendPost(new Post(this, post));
     });
   }
 
   async createPost(content: string) {
     const post = await createPost(content);
-    this.posts.push(new Post(post));
+    this.appendPost(new Post(this, post));
     return post;
+  }
+
+  async retwii(postId: number) {
+    try {
+      const post = await retwii(postId);
+      this.appendPost(new Post(this, post));
+      this.mapIdToPost.get(postId).onRetwii(post.id);
+    } catch (error) {}
   }
 }
 

@@ -1,12 +1,10 @@
 import * as React from "react";
 import { usePosts } from "../hooks/usePosts";
 import { observer } from "mobx-react-lite";
-import * as moment from "moment";
-import { HiHeart, HiOutlineHeart } from "react-icons/hi";
+import { createContext, useMemo } from "react";
+import Post, { Retwii } from "./Post";
 
 import "./../styles/main.scss";
-import { createContext, useMemo } from "react";
-import Post from "./Post";
 
 interface IProps {
   onNavigate: (id: number) => void;
@@ -34,9 +32,13 @@ export default observer(function Posts(props: IProps = initialProps) {
   return (
     <PostsContext.Provider value={context}>
       <ul className="flex flex-col">
-        {posts.map((post) => (
-          <Post key={post.id} post={post} />
-        ))}
+        {posts.map((post) =>
+          post.isRetwii ? (
+            <Retwii key={post.id} post={post} retwiiPost={post.retwiiPost} />
+          ) : (
+            <Post key={post.id} post={post} />
+          )
+        )}
       </ul>
     </PostsContext.Provider>
   );

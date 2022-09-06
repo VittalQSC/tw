@@ -11,26 +11,8 @@ router.get("/all-posts", async (req, res) => {
       include: {
         author: true,
         likes: true,
-        retwiis: {
-          include: {
-            replacedPost: {
-              include: {
-                author: true,
-              },
-            },
-          },
-        },
-        replaceByRetwii: {
-          include: {
-            post: {
-              include: {
-                author: true,
-                likes: true,
-                retwiis: true,
-              },
-            },
-          },
-        },
+        retwiis: true,
+        replaceByRetwii: true,
       },
     });
     res.json(posts);
@@ -103,39 +85,13 @@ router.post("/retwii", authenticateToken, async (req, res) => {
           },
         },
       },
-    });
-
-    const post = await prisma.post.findFirst({
-      where: {
-        id: retwii.id
-      },
       include: {
         author: true,
-        likes: true,
-        retwiis: {
-          include: {
-            replacedPost: {
-              include: {
-                author: true,
-              },
-            },
-          },
-        },
-        replaceByRetwii: {
-          include: {
-            post: {
-              include: {
-                author: true,
-                likes: true,
-                retwiis: true,
-              },
-            },
-          },
-        },
+        replaceByRetwii: true,
       },
     });
 
-    res.json(post);
+    res.json(retwii);
   } catch (error) {
     res.status(500).send("something went wrong");
   }

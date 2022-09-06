@@ -58,6 +58,10 @@ module.exports = {
       },
       shared: {
         ...deps,
+        'react-modal': {
+          singleton: true,
+          requiredVersion: deps['react-modal']
+        },
         axios: {
           singleton: true,
           requiredVersion: deps["axios"],

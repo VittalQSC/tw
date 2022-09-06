@@ -4,12 +4,20 @@ export const baseUrl = "http://localhost:3000/";
 
 export type IAuthor = any;
 
+export interface IRetwii {
+  comment?: string,
+  postId: number,
+  replacedPostId: number
+}
+
 export interface IPost {
   id: number;
   content: string;
   createdAt: string;
   author: IAuthor;
   likes: { likerId: number; likedId: number }[];
+  replaceByRetwii?: IRetwii,
+  retwiis: IRetwii[]
 }
 
 export function getPosts(): Promise<IPost[]> {
@@ -62,5 +70,5 @@ export function retwii(postId: number, comment?: string) {
     {
       withCredentials: true,
     }
-  );
+  ).then(res => res.data);
 }
