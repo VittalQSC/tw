@@ -15,6 +15,7 @@ import { PostsContext } from "./Posts";
 
 interface IProps {
   post: Post;
+  onNavigate?: (postId: number) => void;
 }
 
 export const PostContent = observer(function PostContent(props: IProps) {
@@ -46,8 +47,8 @@ const modalStyles = {
   },
   overlay: {
     display: "flex",
-    "justify-content": "center",
-    "align-items": "center",
+    justifyContent: "center",
+    alignItems: "center",
   },
 };
 
@@ -105,11 +106,14 @@ export const PostActionsBar = observer(function PostActionsBar(
           <HiOutlineSwitchHorizontal />
           <span>{props.post?.retwiisSet.size}</span>
         </button>
-        <button className={`flex gap-1`} onClick={() => {
-          setReplyModalIsOpen(true);
-        }}>
+        <button
+          className={`flex gap-1`}
+          onClick={() => {
+            setReplyModalIsOpen(true);
+          }}
+        >
           <HiOutlineChatAlt />
-          <span>{0}</span>
+          <span>{props?.post?.replies.length}</span>
         </button>
       </div>
     </>
@@ -138,11 +142,17 @@ export const Retwii = observer(function Retwii(props: IPropsRetwii) {
   );
 });
 
-export default observer(function Post(props: IProps) {
+export default observer(function Post({ onNavigate = () => {}, post }: IProps) {
   return (
     <li className="hover:bg-slate-100 p-[10px] first:border-t-[1px] border-x-[1px] border-b-[1px]">
-      <PostContent post={props.post} />
-      <PostActionsBar post={props.post} />
+      <PostContent post={post} />
+      <PostActionsBar post={post} />
+      <div
+        className="text-grey-200 text-sm"
+        onClick={() => onNavigate(post?.id)}
+      >
+        replies
+      </div>
     </li>
   );
 });

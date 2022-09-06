@@ -12,6 +12,7 @@ interface IProps {
   onPostReject?: () => void;
 }
 
+// TODO reuse TextForm
 export default function CreatePost(
   {
     withBorders = true,

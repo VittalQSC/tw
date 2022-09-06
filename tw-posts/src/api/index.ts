@@ -72,3 +72,16 @@ export function retwii(postId: number, comment?: string) {
     }
   ).then(res => res.data);
 }
+
+export function replyOnPost(postId: number, content: string) {
+  return axios.post(
+    `${baseUrl}posts/reply-on-post`,
+    {
+      postId,
+      content,
+    },
+    {
+      withCredentials: true,
+    }
+  ).then(res => res.data);
+}

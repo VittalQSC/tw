@@ -7,6 +7,10 @@ import CreatePost from "posts/CreatePost";
 import Profile from "profile/Profile";
 import { observer } from "mobx-react-lite";
 import { me } from "../../stores/User";
+import { postList } from "posts/PostsStore";
+import Post from "posts/Post";
+import { useMemo } from "react";
+import Reply from "posts/Reply";
 
 const Home = observer(function Home() {
   const navigate = useNavigate();
@@ -16,6 +20,9 @@ const Home = observer(function Home() {
       <Posts
         onNavigate={(userId) => {
           navigate(`/profile/${userId}`);
+        }}
+        onNavigateReplies={(postId: number) => {
+          navigate(`/replies/${postId}`);
         }}
         meId={me?.user?.id || null}
       />
@@ -39,6 +46,22 @@ const ProfilePage = observer(function ProfilePage() {
   );
 });
 
+const RepliesPage = observer(function RepliesPage() {
+  const params = useParams();
+  const post = useMemo(
+    () => postList.findPostById(+params.postId),
+    [params.postId]
+  );
+  return (
+    <div>
+      <Post post={post} />
+      {(post.replies || []).map((reply: { content: string }) => {
+        return <Reply content={reply.content} />;
+      })}
+    </div>
+  );
+});
+
 export default function Content() {
   return (
     <div className="flex-no min-w-[900px]">
@@ -47,6 +70,7 @@ export default function Content() {
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/home" element={<Home />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
+        <Route path="/replies/:postId" element={<RepliesPage />} />
         <Route path="*" element={<div>Not found</div>} />
       </Routes>
     </div>

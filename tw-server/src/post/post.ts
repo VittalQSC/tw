@@ -13,6 +13,7 @@ router.get("/all-posts", async (req, res) => {
         likes: true,
         retwiis: true,
         replaceByRetwii: true,
+        replies: true,
       },
     });
     res.json(posts);
@@ -96,5 +97,39 @@ router.post("/retwii", authenticateToken, async (req, res) => {
     res.status(500).send("something went wrong");
   }
 });
+
+router.post("/reply-on-post", authenticateToken, async (req, res) => {
+  try {
+    const { prisma } = getContext();
+
+    const reply = await prisma.reply.create({
+      data: {
+        postId: +req?.body?.postId,
+        content: req?.body?.content,
+      }
+    });
+
+    res.json(reply);
+  } catch (error) {
+    res.status(500).send("something went wrong");
+  }
+})
+
+router.post("/reply-on-reply", authenticateToken, async (req, res) => {
+  try {
+    const { prisma } = getContext();
+
+    const reply = await prisma.reply.create({
+      data: {
+        replyId: +req?.body?.replyId,
+        content: req?.body?.content,
+      }
+    });
+
+    res.json(reply);
+  } catch (error) {
+    res.status(500).send("something went wrong");
+  }
+})
 
 export const postRouter = router;

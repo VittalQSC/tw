@@ -5,6 +5,7 @@ import {
   IAuthor,
   IPost,
   like,
+  replyOnPost,
   retwii,
   unlike,
 } from "../api";
@@ -32,6 +33,7 @@ export class Post {
   likesSet: Set<number> = new Set();
   retwiisSet: Set<number> = new Set();
   retwiiPostId: number | null = null;
+  replies: { content: string }[];
 
   postList: PostList | null = null;
 
@@ -86,6 +88,11 @@ export class Post {
 
   async retwii(postId: number) {
     return this.postList.retwii(postId);
+  }
+
+  async replyOnPost(content: string) {
+    const reply = await replyOnPost(this.id, content);
+    this.replies.push(reply);
   }
 }
 

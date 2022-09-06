@@ -13,8 +13,8 @@ const modalStyles = {
   },
   overlay: {
     display: "flex",
-    "justify-content": "center",
-    "align-items": "center",
+    justifyContent: "center",
+    alignItems: "center",
   },
 };
 

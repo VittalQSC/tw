@@ -9,6 +9,7 @@ import "./../styles/main.scss";
 interface IProps {
   onNavigate: (id: number) => void;
   meId?: number | null;
+  onNavigateReplies?: (postId: number) => void;
 }
 
 interface IPostsContext {
@@ -36,7 +37,11 @@ export default observer(function Posts(props: IProps = initialProps) {
           post.isRetwii ? (
             <Retwii key={post.id} post={post} retwiiPost={post.retwiiPost} />
           ) : (
-            <Post key={post.id} post={post} />
+            <Post
+              key={post.id}
+              post={post}
+              onNavigate={() => props?.onNavigateReplies(post.id)}
+            />
           )
         )}
       </ul>
