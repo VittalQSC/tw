@@ -20,7 +20,7 @@ declare module "posts/Post" {
 
 declare module "posts/Reply" {
   const Reply: React.ComponentType<{
-    content: string; // TODO fix
+    post: any; // TODO fix
   }>;
 
   export default Reply;

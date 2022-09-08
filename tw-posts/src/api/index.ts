@@ -4,10 +4,17 @@ export const baseUrl = "http://localhost:3000/";
 
 export type IAuthor = any;
 
+export interface IReply {
+  id: number;
+  postId: number;
+  replyPost: IPost;
+  post: IPost;
+}
+
 export interface IRetwii {
-  comment?: string,
-  postId: number,
-  replacedPostId: number
+  comment?: string;
+  postId: number;
+  replacedPostId: number;
 }
 
 export interface IPost {
@@ -16,8 +23,9 @@ export interface IPost {
   createdAt: string;
   author: IAuthor;
   likes: { likerId: number; likedId: number }[];
-  replaceByRetwii?: IRetwii,
-  retwiis: IRetwii[]
+  replaceByRetwii?: IRetwii;
+  retwiis: IRetwii[];
+  replies: IReply[];
 }
 
 export function getPosts(): Promise<IPost[]> {
@@ -61,27 +69,31 @@ export function unlike(postId: number) {
 }
 
 export function retwii(postId: number, comment?: string) {
-  return axios.post(
-    `${baseUrl}posts/retwii`,
-    {
-      postId,
-      comment,
-    },
-    {
-      withCredentials: true,
-    }
-  ).then(res => res.data);
+  return axios
+    .post(
+      `${baseUrl}posts/retwii`,
+      {
+        postId,
+        comment,
+      },
+      {
+        withCredentials: true,
+      }
+    )
+    .then((res) => res.data);
 }
 
-export function replyOnPost(postId: number, content: string) {
-  return axios.post(
-    `${baseUrl}posts/reply-on-post`,
-    {
-      postId,
-      content,
-    },
-    {
-      withCredentials: true,
-    }
-  ).then(res => res.data);
+export function reply(postId: number, content: string) {
+  return axios
+    .post(
+      `${baseUrl}posts/reply`,
+      {
+        postId,
+        content,
+      },
+      {
+        withCredentials: true,
+      }
+    )
+    .then((res) => res.data);
 }

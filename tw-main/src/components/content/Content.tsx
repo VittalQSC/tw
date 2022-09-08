@@ -1,16 +1,16 @@
 import * as React from "react";
+import { useMemo } from "react";
+import { observer } from "mobx-react-lite";
 import { Routes, Route, useParams, useNavigate } from "react-router-dom";
-import Posts from "posts/Posts";
 import SignIn from "../sign-in/SignIn";
 import SignUp from "../sign-up/SignUp";
-import CreatePost from "posts/CreatePost";
-import Profile from "profile/Profile";
-import { observer } from "mobx-react-lite";
 import { me } from "../../stores/User";
 import { postList } from "posts/PostsStore";
+import Posts from "posts/Posts";
 import Post from "posts/Post";
-import { useMemo } from "react";
 import Reply from "posts/Reply";
+import CreatePost from "posts/CreatePost";
+import Profile from "profile/Profile";
 
 const Home = observer(function Home() {
   const navigate = useNavigate();
@@ -53,12 +53,10 @@ const RepliesPage = observer(function RepliesPage() {
     [params.postId]
   );
   return (
-    <div>
+    <ul>
       <Post post={post} />
-      {(post.replies || []).map((reply: { content: string }) => {
-        return <Reply content={reply.content} />;
-      })}
-    </div>
+      {(post.replies || []).map((replyId: any) => (<Reply key={replyId} post={postList.findPostById(replyId)} />))}
+    </ul>
   );
 });
 

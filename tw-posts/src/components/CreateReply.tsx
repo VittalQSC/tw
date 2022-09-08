@@ -18,7 +18,7 @@ export default observer(function CreateReply(props: IProps) {
     }
 
     return (
-    <div className="min-w-[500px]">
+    <div>
       <PostContent post={props.post} />
       <div className="text-slate-400 text-xs my-[10px]">
         Replying to {props.post.author.name}

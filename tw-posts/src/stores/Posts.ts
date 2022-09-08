@@ -1,14 +1,7 @@
+import { createPost, getPosts, IAuthor, IPost, like, reply, retwii, unlike } from "./../api";
+import { me } from "main/User";
 import { makeAutoObservable } from "mobx";
-import {
-  createPost,
-  getPosts,
-  IAuthor,
-  IPost,
-  like,
-  replyOnPost,
-  retwii,
-  unlike,
-} from "../api";
+
 
 export interface RetwiiDto {
   post: any;
@@ -25,6 +18,12 @@ export class Retwii {
   }
 }
 
+export enum PostTypes {
+  CLASSIC = "CLASSIC",
+  RETWII = "RETWII",
+  REPLY = "REPLY",
+}
+
 export class Post {
   id: number = 0;
   content: string = "";
@@ -33,7 +32,8 @@ export class Post {
   likesSet: Set<number> = new Set();
   retwiisSet: Set<number> = new Set();
   retwiiPostId: number | null = null;
-  replies: { content: string }[];
+  replies: number[];
+  replyPostId: number | null = null;
 
   postList: PostList | null = null;
 
@@ -41,8 +41,9 @@ export class Post {
     makeAutoObservable(this);
 
     this.postList = postList;
-    const { likes, replaceByRetwii, retwiis, ...restPost } = post;
+    const { likes, replaceByRetwii, retwiis, replies, ...restPost } = post;
     Object.assign(this, restPost);
+    this.replies = (replies || []).map(rep => rep.replyPost.id);
     this.likesSet = new Set(
       (likes || []).map((like: { likerId: number }) => like.likerId)
     );
@@ -50,12 +51,37 @@ export class Post {
     this.retwiiPostId = replaceByRetwii?.postId;
   }
 
+  get postType(): PostTypes {
+    if (!!this.retwiiPostId) {
+      return PostTypes.RETWII;
+    }
+
+    if (!!this.replyPostId) {
+      return PostTypes.REPLY;
+    }
+
+    return PostTypes.CLASSIC;
+  }
+
+  // TODO remove
   get isRetwii(): boolean {
     return !!this.retwiiPostId;
   }
 
   get retwiiPost(): Post | null {
     return this.postList.mapIdToPost.get(this.retwiiPostId);
+  }
+
+  get isRetwiitedByMe(): boolean {
+    return this.isRetwiitedBy(me.user.id);
+  }
+
+  get originalPost(): Post {
+    return this.postList.findPostById(this.retwiiPostId || this.id);
+  }
+
+  get repliedPost(): Post {
+    return this.postList.findPostById(this.replyPostId || this.id);
   }
 
   isLikedBy(userId: number | null) {
@@ -91,8 +117,13 @@ export class Post {
   }
 
   async replyOnPost(content: string) {
-    const reply = await replyOnPost(this.id, content);
-    this.replies.push(reply);
+    try {
+      const replyResult = await reply(this.id, content);
+      this.replies.push(replyResult.replyPost.id);
+      this.postList.appendPost(new Post(this.postList, replyResult.replyPost));
+    } catch (error) {
+      
+    }
   }
 }
 

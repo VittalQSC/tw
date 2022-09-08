@@ -50,8 +50,11 @@ module.exports = {
     new CleanWebpackPlugin(),
     // To learn more about the usage of this plugin, please visit https://webpack.js.org/plugins/module-federation-plugin/
     new ModuleFederationPlugin({
-      name: "posts",
+      name: "main",
       filename: "remoteEntry.js",
+      exposes: {
+        "./User": "./src/stores/User.ts"
+      },
       remotes: {
         posts: "posts@http://localhost:3003/remoteEntry.js",
         profile: "profile@http://localhost:3004/remoteEntry.js",

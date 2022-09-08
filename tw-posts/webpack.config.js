@@ -58,10 +58,14 @@ module.exports = {
       filename: "remoteEntry.js",
       exposes: {
         "./Posts": "./src/components/Posts",
-        "./Post": "./src/components/Post",
-        "./Reply": "./src/components/Reply",
+        "./Post": "./src/components/post/Post",
+        "./Reply": "./src/components/post/Reply",
+        "./Retwii": "./src/components/post/Retwii",
         "./PostsStore": "./src/stores/Posts",
         "./CreatePost": "./src/components/CreatePost.tsx",
+      },
+      remotes: {
+        main: "main@http://localhost:3002/remoteEntry.js",
       },
       shared: {
         ...deps,

@@ -13,7 +13,12 @@ router.get("/all-posts", async (req, res) => {
         likes: true,
         retwiis: true,
         replaceByRetwii: true,
-        replies: true,
+        replies: {
+          include: {
+            replyPost: true,
+          }
+        },
+        reply: true,
       },
     });
     res.json(posts);
@@ -32,6 +37,11 @@ router.post("/create-post", authenticateToken, async (req, res) => {
       },
       include: {
         author: true,
+        likes: true,
+        retwiis: true,
+        replaceByRetwii: true,
+        replies: true,
+        reply: true,
       },
     });
     res.json({ createdPost: result });
@@ -79,6 +89,7 @@ router.post("/retwii", authenticateToken, async (req, res) => {
     const retwii = await prisma.post.create({
       data: {
         authorId: req.body.ctx.user.id,
+        content: req.body.comment,
         replaceByRetwii: {
           create: {
             postId: +req.body.postId,
@@ -98,38 +109,48 @@ router.post("/retwii", authenticateToken, async (req, res) => {
   }
 });
 
-router.post("/reply-on-post", authenticateToken, async (req, res) => {
+router.post("/reply", authenticateToken, async (req, res) => {
   try {
     const { prisma } = getContext();
 
     const reply = await prisma.reply.create({
       data: {
         postId: +req?.body?.postId,
-        content: req?.body?.content,
-      }
+        replyPost: {
+          create: {
+            authorId: +req.body.ctx.user.id,
+            content: `${req.body.content}`,
+          },
+        },
+      },
+      include: {
+        replyPost: {
+          include: {
+            author: true,
+            likes: true,
+            retwiis: true,
+            replaceByRetwii: true,
+            replies: true,
+            reply: true,
+          },
+        },
+        post: {
+          include: {
+            author: true,
+            likes: true,
+            retwiis: true,
+            replaceByRetwii: true,
+            replies: true,
+            reply: true,
+          },
+        },
+      },
     });
 
     res.json(reply);
   } catch (error) {
     res.status(500).send("something went wrong");
   }
-})
-
-router.post("/reply-on-reply", authenticateToken, async (req, res) => {
-  try {
-    const { prisma } = getContext();
-
-    const reply = await prisma.reply.create({
-      data: {
-        replyId: +req?.body?.replyId,
-        content: req?.body?.content,
-      }
-    });
-
-    res.json(reply);
-  } catch (error) {
-    res.status(500).send("something went wrong");
-  }
-})
+});
 
 export const postRouter = router;
