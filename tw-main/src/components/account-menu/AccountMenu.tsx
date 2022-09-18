@@ -4,7 +4,7 @@ import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { me } from "../../stores/User";
-import { useClickOutside } from "../../hooks/useClickOutside";
+import useClickOutside from "../../hooks/useClickOutside";
 
 export default observer(function AccountMenu() {
   const {

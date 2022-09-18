@@ -68,10 +68,10 @@ export default observer(function PostActionsBar(props: IProps) {
         </button>
         <button
           className={`flex gap-1 ${
-            props.post?.isRetwiitedBy(me?.user.id) && "text-green-400"
+            props.post?.isRetwiitedByMe && "text-green-400"
           }`}
           onClick={() =>
-            !props.post?.isRetwiitedBy(me?.user.id) &&
+            !props.post?.isRetwiitedByMe &&
             postToInteract.retwii(postToInteract.id)
           }
         >

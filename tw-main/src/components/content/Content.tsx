@@ -11,6 +11,7 @@ import Post from "posts/Post";
 import Reply from "posts/Reply";
 import CreatePost from "posts/CreatePost";
 import Profile from "profile/Profile";
+import SearchTwii from "suggest/SearchTwii";
 
 const Home = observer(function Home() {
   const navigate = useNavigate();
@@ -55,22 +56,34 @@ const RepliesPage = observer(function RepliesPage() {
   return (
     <ul>
       <Post post={post} />
-      {(post.replies || []).map((replyId: any) => (<Reply key={replyId} post={postList.findPostById(replyId)} />))}
+      {(post.replies || []).map((replyId: any) => (
+        <Reply key={replyId} post={postList.findPostById(replyId)} />
+      ))}
     </ul>
   );
 });
 
 export default function Content() {
+  const navigate = useNavigate();
+  function onUserClick(userId: number) {
+    navigate(`/profile/${userId}`);
+  }
+
   return (
-    <div className="flex-no min-w-[900px]">
-      <Routes>
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/profile/:userId" element={<ProfilePage />} />
-        <Route path="/replies/:postId" element={<RepliesPage />} />
-        <Route path="*" element={<div>Not found</div>} />
-      </Routes>
+    <div className="flex gap-1">
+      <div className="flex-no min-w-[900px]">
+        <Routes>
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/profile/:userId" element={<ProfilePage />} />
+          <Route path="/replies/:postId" element={<RepliesPage />} />
+          <Route path="*" element={<div>Not found</div>} />
+        </Routes>
+      </div>
+      <div className="py-[10px]">
+        <SearchTwii onUserClick={onUserClick} />
+      </div>
     </div>
   );
 }

@@ -4,22 +4,24 @@ import { authenticateToken } from "user/jwt-utils";
 
 const router = express.Router();
 
+const postQuery = {
+  author: true,
+  likes: true,
+  retwiis: true,
+  replaceByRetwii: true,
+  replies: {
+    include: {
+      replyPost: true,
+    }
+  },
+  reply: true,
+};
+
 router.get("/all-posts", async (req, res) => {
   try {
     const { prisma } = getContext();
     const posts = await prisma.post.findMany({
-      include: {
-        author: true,
-        likes: true,
-        retwiis: true,
-        replaceByRetwii: true,
-        replies: {
-          include: {
-            replyPost: true,
-          }
-        },
-        reply: true,
-      },
+      include: postQuery
     });
     res.json(posts);
   } catch (error) {
@@ -35,14 +37,7 @@ router.post("/create-post", authenticateToken, async (req, res) => {
         content: req.body.content,
         authorId: req.body.ctx.user.id,
       },
-      include: {
-        author: true,
-        likes: true,
-        retwiis: true,
-        replaceByRetwii: true,
-        replies: true,
-        reply: true,
-      },
+      include: postQuery,
     });
     res.json({ createdPost: result });
   } catch (error) {
@@ -97,10 +92,7 @@ router.post("/retwii", authenticateToken, async (req, res) => {
           },
         },
       },
-      include: {
-        author: true,
-        replaceByRetwii: true,
-      },
+      include: postQuery,
     });
 
     res.json(retwii);
@@ -125,24 +117,10 @@ router.post("/reply", authenticateToken, async (req, res) => {
       },
       include: {
         replyPost: {
-          include: {
-            author: true,
-            likes: true,
-            retwiis: true,
-            replaceByRetwii: true,
-            replies: true,
-            reply: true,
-          },
+          include: postQuery,
         },
         post: {
-          include: {
-            author: true,
-            likes: true,
-            retwiis: true,
-            replaceByRetwii: true,
-            replies: true,
-            reply: true,
-          },
+          include: postQuery,
         },
       },
     });

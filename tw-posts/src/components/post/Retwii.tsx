@@ -21,8 +21,7 @@ export default observer(function Retwii(props: IProps) {
       </>
       <PostContent post={props.post.originalPost} />
       <PostActionsBar
-        postToInteract={props.post.originalPost}
-        post={props.post}
+        post={props.post.originalPost}
       />
     </li>
   );

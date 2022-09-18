@@ -1,7 +1,15 @@
-import { createPost, getPosts, IAuthor, IPost, like, reply, retwii, unlike } from "./../api";
+import {
+  createPost,
+  getPosts,
+  IAuthor,
+  IPost,
+  like,
+  reply,
+  retwii,
+  unlike,
+} from "./../api";
 import { me } from "main/User";
 import { makeAutoObservable } from "mobx";
-
 
 export interface RetwiiDto {
   post: any;
@@ -43,11 +51,13 @@ export class Post {
     this.postList = postList;
     const { likes, replaceByRetwii, retwiis, replies, ...restPost } = post;
     Object.assign(this, restPost);
-    this.replies = (replies || []).map(rep => rep.replyPost.id);
+    this.replies = (replies || []).map((rep) => rep.replyPost.id);
     this.likesSet = new Set(
       (likes || []).map((like: { likerId: number }) => like.likerId)
     );
-    this.retwiisSet = new Set((retwiis || []).map((retwii) => retwii.replacedPostId));
+    this.retwiisSet = new Set(
+      (retwiis || []).map((retwii) => retwii.replacedPostId)
+    );
     this.retwiiPostId = replaceByRetwii?.postId;
   }
 
@@ -61,11 +71,6 @@ export class Post {
     }
 
     return PostTypes.CLASSIC;
-  }
-
-  // TODO remove
-  get isRetwii(): boolean {
-    return !!this.retwiiPostId;
   }
 
   get retwiiPost(): Post | null {
@@ -89,9 +94,14 @@ export class Post {
   }
 
   isRetwiitedBy(userId: number | null) {
-    return !this.isRetwii && !!Array.from(this.retwiisSet).find(replacedPostId => {
-      return this.postList.mapIdToPost.get(replacedPostId).author.id === userId;
-    });
+    return (
+      !this.retwiiPostId &&
+      !!Array.from(this.retwiisSet).find((replacedPostId) => {
+        return (
+          this.postList.mapIdToPost.get(replacedPostId).author.id === userId
+        );
+      })
+    );
   }
 
   onRetwii(replacedPostId: number) {
@@ -119,11 +129,9 @@ export class Post {
   async replyOnPost(content: string) {
     try {
       const replyResult = await reply(this.id, content);
-      this.replies.push(replyResult.replyPost.id);
+      this.replies.unshift(replyResult.replyPost.id);
       this.postList.appendPost(new Post(this.postList, replyResult.replyPost));
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 }
 
@@ -150,7 +158,7 @@ export class PostList {
 
   appendPost(post: Post) {
     this.mapIdToPost.set(post.id, post);
-    this.postIds.push(post.id);
+    this.postIds.unshift(post.id);
   }
 
   async loadAll() {

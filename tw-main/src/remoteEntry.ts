@@ -48,3 +48,9 @@ declare module "profile/Profile" {
 
   export default Profile;
 }
+
+declare module "suggest/SearchTwii" {
+  const SearchTwii: React.ComponentType<any>;
+
+  export default SearchTwii;
+}

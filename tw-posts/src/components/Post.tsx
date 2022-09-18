@@ -96,11 +96,10 @@ export const PostActionsBar = observer(function PostActionsBar(
         </button>
         <button
           className={`flex gap-1 ${
-            replacedPost.isRetwiitedBy(context.meId) && "text-green-400"
+            replacedPost.isRetwiitedByMe && "text-green-400"
           }`}
           onClick={() =>
-            !replacedPost.isRetwiitedBy(context.meId) &&
-            props.post.retwii(props.post.id)
+            !replacedPost.isRetwiitedByMe && props.post.retwii(props.post.id)
           }
         >
           <HiOutlineSwitchHorizontal />

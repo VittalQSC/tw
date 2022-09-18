@@ -1,6 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { ModuleFederationPlugin } = require("webpack").container;
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
@@ -12,7 +12,7 @@ module.exports = {
   devtool: "inline-source-map",
   devServer: {
     static: path.join(__dirname, "dist"),
-    port: 3002,
+    port: 3005,
   },
   output: {
     filename: "[name].[contenthash].js",
@@ -44,29 +44,23 @@ module.exports = {
         test: /\.(css|s[ac]ss)$/i,
         use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
       },
+      {
+        test: /\.(png|jpg|gif)$/i,
+        type: "asset/resource",
+      },
     ],
   },
   plugins: [
     new CleanWebpackPlugin(),
     // To learn more about the usage of this plugin, please visit https://webpack.js.org/plugins/module-federation-plugin/
     new ModuleFederationPlugin({
-      name: "main",
+      name: "suggest",
       filename: "remoteEntry.js",
       exposes: {
-        "./User": "./src/stores/User.ts",
-        "./useClickOutside": "./src/hooks/useClickOutside.ts"
-      },
-      remotes: {
-        posts: "posts@http://localhost:3003/remoteEntry.js",
-        profile: "profile@http://localhost:3004/remoteEntry.js",
-        suggest: "suggest@http://localhost:3005/remoteEntry.js",
+        "./SearchTwii": "./src/components/search/SearchTwii.tsx",
       },
       shared: {
         ...deps,
-        'react-modal': {
-          singleton: true,
-          requiredVersion: deps['react-modal']
-        },
         axios: {
           singleton: true,
           requiredVersion: deps["axios"],

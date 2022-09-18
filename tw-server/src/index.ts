@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { userRouter } from "./user/user";
 import { postRouter } from "post/post";
 import { profileRouter } from "profile/profile";
+import { suggestRouter } from "suggest/suggest";
 
 const port = 3000;
 const app = express();
@@ -15,6 +16,7 @@ app.use(cookieParser());
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
 app.use("/profile", profileRouter);
+app.use("/suggest", suggestRouter);
 
 app.get("/", (req, res) => {
   res.json({ data: "Hello World!" });
